@@ -405,3 +405,41 @@ def eff_net_fine_tuning(input: Tensors, n_classes: int, efnet=efn.EfficientNetB1
 
     model = tf.keras.Model(input, out, name='effb0')
     return model
+
+def jt_model_1(input: Tensors, n_classes: int):
+    input_image = input[0]
+    padding = tf.keras.layers.Lambda(lambda x: calculate_padding(x))(input_image)
+    padded = tf.keras.layers.Lambda(pad)([input_image, padding])
+    conv1 = tf.keras.layers.Conv2D(40, (5, 5), padding="same", activation=tf.nn.relu,
+                                   data_format="channels_last")(padded)
+    conv2 = tf.keras.layers.Conv2D(60, (5, 5), padding="same", activation=None,
+                                   data_format="channels_last")(conv1)
+    pool2 = tf.keras.layers.MaxPooling2D((2, 2), (2, 2), padding="same")(conv2)
+    conv3 = tf.keras.layers.Conv2D(120, (5, 5), padding="same", activation=None,
+                                   data_format="channels_last")(pool2)
+    conv4 = tf.keras.layers.Conv2D(160, (5, 5), padding="same", activation=None,
+                                   data_format="channels_last")(conv3)
+    pool4 = tf.keras.layers.MaxPooling2D((2, 2), (2, 2), padding="same")(conv4)
+    conv5 = tf.keras.layers.Conv2D(240, (5, 5), padding="same", activation=tf.nn.relu,
+                                   data_format="channels_last")(pool4)
+    # decoder
+    deconv1 = tf.keras.layers.Conv2DTranspose(240, (2,2), padding="same", activation=tf.nn.relu,
+                                   data_format="channels_last")(conv5)
+    deconv2 = tf.keras.layers.Conv2DTranspose(120, (2,2), (2,2), padding="same", activation=tf.nn.relu,
+                                   data_format="channels_last")(deconv1)
+    deconv3 = tf.keras.layers.Conv2DTranspose(60, (2,2), (2,2), padding="same", activation=tf.nn.relu,
+                                   data_format="channels_last")(deconv2)
+    # logits = tf.keras.layers.Conv2DTranspose(n_classes, (2,2), padding="same", activation=tf.nn.softmax,
+    #                                data_format="channels_last", name="logits")(deconv3)
+    # logits = tf.keras.layers.Activation('softmax')(deconv4)
+    # logits = tf.keras.layers.Conv2D(n_classes, (1, 1), (1, 1), name="logits")(deconv3)
+
+    deconv3 = tf.keras.layers.Lambda(crop)([deconv3, padding])
+    # prediction
+    logits = tf.keras.layers.Conv2D(n_classes, (1, 1), (1, 1), name="logits")(deconv3)
+    model = tf.keras.models.Model(inputs=input, outputs=logits, name='jt_model_1')
+
+    return model
+
+    
+    

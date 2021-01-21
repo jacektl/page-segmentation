@@ -7,6 +7,7 @@ import numpy as np
 from ocr4all.colors import ColorMap
 
 from ocr4all_pixel_classifier.lib.dataset import SingleData
+from ocr4all_pixel_classifier.lib.architecture import Architecture
 
 
 class Prediction(NamedTuple):
@@ -24,3 +25,4 @@ class PredictSettings:
     n_classes: int = -1
     post_process: Optional[List[Callable[[np.ndarray, SingleData], np.ndarray]]] = None
     gpu_allow_growth: bool = False
+    architecture: Architecture = Architecture.FCN_SKIP

@@ -5,6 +5,8 @@ import enum
 logger = logging.getLogger(__name__)
 
 
+
+
 def loss(y_true, y_pred):
     return tf.keras.backend.mean(tf.keras.losses.sparse_categorical_crossentropy(y_true, y_pred, from_logits=True))
 
@@ -139,3 +141,9 @@ class Monitor(enum.Enum):
     DICE_COEF = 'dice_coef'
     JACRAD_COEF = 'jacard_coef'
     FGPA = 'fgpa'
+
+def masked_loss(binary_mask: tf.keras.layers.Layer, loss_name: str):
+    used_loss = Loss(loss_name)
+
+    def custom_loss(y_true, y_pred):
+        pass

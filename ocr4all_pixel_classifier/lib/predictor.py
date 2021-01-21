@@ -17,6 +17,7 @@ class Predictor:
 
         if not network:
             self.network = Network("Predict", n_classes=settings.n_classes,
+                                   model_constructor=settings.architecture,
                                    model=os.path.abspath(self.settings.network))
         if settings.output:
             output_dir = settings.output

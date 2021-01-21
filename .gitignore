@@ -113,3 +113,7 @@ venv.bak/
 requirements.txt 
 .deps
 .deps-devel
+
+# vscode
+.vscode/
+examples/

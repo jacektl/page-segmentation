@@ -17,13 +17,14 @@ class Architecture(enum.Enum):
     EFFNETB5 = 'effb5'
     EFFNETB6 = 'effb6'
     EFFNETB7 = 'effb7'
+    JT1 = 'jt_model_1'
 
     def __call__(self, *args, **kwargs):
         return self.model()
 
     def model(self):
         from ocr4all_pixel_classifier.lib.model import model_fcn_skip, model_fcn, res_net_fine_tuning, res_unet, \
-            unet_with_mobile_net_encoder, unet, eff_net_fine_tuning
+            unet_with_mobile_net_encoder, unet, eff_net_fine_tuning, jt_model_1
         from efficientnet import tfkeras as efn
         return {
             Architecture.FCN_SKIP: model_fcn_skip,
@@ -40,6 +41,7 @@ class Architecture(enum.Enum):
             Architecture.EFFNETB5: partial(eff_net_fine_tuning, efnet=efn.EfficientNetB5),
             Architecture.EFFNETB6: partial(eff_net_fine_tuning, efnet=efn.EfficientNetB6),
             Architecture.EFFNETB7: partial(eff_net_fine_tuning, efnet=efn.EfficientNetB7),
+            Architecture.JT1: jt_model_1,
         }[self]
 
     def preprocess(self):
@@ -61,6 +63,7 @@ class Architecture(enum.Enum):
             Architecture.EFFNETB5: (efn.preprocess_input, True),
             Architecture.EFFNETB6: (efn.preprocess_input, True),
             Architecture.EFFNETB7: (efn.preprocess_input, True),
+            Architecture.JT1: (default_preprocess, False)
         }[self]
 
 
